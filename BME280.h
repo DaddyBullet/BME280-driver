@@ -1,6 +1,7 @@
 #ifndef BME280_H
 #define BME280_H
 
+#include <stdint.h>
 // Include your device specific libraries here
 
 #define BME280_HUM_LSB      0xFE

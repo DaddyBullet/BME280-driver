@@ -169,17 +169,23 @@ float BME280readHumidity(uint8_t device_id)
 
 uint8_t BME280readByte(uint8_t device_addr, uint8_t reg_addr)
 {
+  uint8_t ret_byte = 0;
   // Insert your code here
+  return ret_byte;
 }
 
 uint16_t BME280readWord(uint8_t device_addr, uint8_t reg_addr)
 {
+  uint16_t ret_word = 0;
   // Insert your code here
+  return ret_word;
 }
 
 uint32_t BME280readDWord(uint8_t device_addr, uint8_t reg_addr)
 {
+  uint32_t ret_dword = 0;
   // Insert your code here
+  return ret_dword;
 }
 
 void BME280writeByte(uint8_t device_addr, uint8_t reg_addr, uint8_t data)
