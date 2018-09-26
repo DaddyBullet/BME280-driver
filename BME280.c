@@ -164,5 +164,23 @@ float BME280readHumidity(uint8_t device_id)
   v_x1_u32r = (v_x1_u32r < 0? 0 : v_x1_u32r);
   v_x1_u32r = (v_x1_u32r > 419430400? 419430400 : v_x1_u32r);
   real_hum = ((float)((uint32_t)(v_x1_u32r >> 12))) / 1024.;
-  return real_hum;  
+  return real_hum;
+}
+
+uint8_t BME280readByte(uint8_t device_addr, uint8_t reg_addr)
+{
+  // Insert your code here
+}
+uint16_t BME280readWorld(uint8_t device_addr, uint8_t reg_addr)
+{
+  // Insert your code here
+}
+uint32_t BME280readDWord(uint8_t device_addr, uint8_t reg_addr)
+{
+  // Insert your code here
+}
+
+void BME280writeByte(uint8_t device_addr, uint8_t reg_addr, uint8_t data)
+{
+  // Insert your code here
 }
