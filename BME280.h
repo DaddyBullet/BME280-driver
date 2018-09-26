@@ -31,7 +31,7 @@
 #define BME280_COMPENASATION_P_1_9 0x8E
 
 #define BME280_COMPENASATION_H_1   0xA1
-#define BME280_COMPENASATION_H_2_5 0xE3
+#define BME280_COMPENASATION_H_2_6 0xE3
 
 #define BME280_CTRL_HUM_DISABLE              0b000
 #define BME280_CTRL_HUM_OVERSAMPLING_1       0b001
@@ -90,7 +90,7 @@ void BME280initHumidityCompensationTable(uint8_t device_id);
 void BME280initallCompensationTable(uint8_t device_id);
 
 float BME280readTemperature(uint8_t device_id);
-int32_t BME280readTemperatureData(uint8_t device_id);
+uint32_t BME280readTemperatureData(uint8_t device_id);
 
 float BME280readPressure(uint8_t device_id);
 uint32_t BME280readPressureData(uint8_t device_id);
@@ -101,7 +101,7 @@ uint16_t BME280readHumidityData(uint8_t device_id);
 
 
 uint8_t BME280readByte(uint8_t device_addr, uint8_t reg_addr);
-uint16_t BME280readWorld(uint8_t device_addr, uint8_t reg_addr);
+uint16_t BME280readWord(uint8_t device_addr, uint8_t reg_addr);
 uint32_t BME280readDWord(uint8_t device_addr, uint8_t reg_addr);
 
 void BME280writeByte(uint8_t device_addr, uint8_t reg_addr, uint8_t data);

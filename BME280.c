@@ -2,7 +2,7 @@
 
 static uint16_t BME280_temp_calib[3];
 static uint16_t BME280_press_calib[9];
-static uint16_t BME280_hum_calib[5];
+static uint16_t BME280_hum_calib[6];
 
 static int32_t BME280_t_fine = 0;
 
@@ -18,7 +18,7 @@ void BME280initTemperatureCompensationTable(uint8_t device_id)
   uint16_t tmp_word = 0;
   for(int i = 0; i < 3; i++)
   {
-    tmp_word = BME280readWord(device_id, BME280_COMPENASATION_T_1_3 + (2 * i);
+    tmp_word = BME280readWord(device_id, BME280_COMPENASATION_T_1_3 + (2 * i));
     BME280_temp_calib[i] = ((tmp_word >> 8) & 0xFF) | (tmp_word << 8);
   }
 }
@@ -28,7 +28,7 @@ void BME280initPressureCompensationTable(uint8_t device_id)
   uint16_t tmp_word = 0;
   for(int i = 0; i < 9; i++)
   {
-    tmp_word = BME280readWord(device_id, BME280_COMPENASATION_P_1_9 + (2 * i);
+    tmp_word = BME280readWord(device_id, BME280_COMPENASATION_P_1_9 + (2 * i));
     BME280_press_calib[i] = ((tmp_word >> 8) & 0xFF) | (tmp_word << 8);
   }
 }
@@ -37,16 +37,16 @@ void BME280initHumidityCompensationTable(uint8_t device_id)
 {
   uint16_t tmp_word = 0;
   BME280_hum_calib[0] = BME280readByte(device_id, BME280_COMPENASATION_H_1);
-  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_5);
+  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_6);
   BME280_hum_calib[1] = ((tmp_word >> 8) & 0xFF) | (tmp_word << 8);;
-  BME280_hum_calib[2] = BME280readByte(device_id, BME280_COMPENASATION_H_2_5 + 2);
+  BME280_hum_calib[2] = BME280readByte(device_id, BME280_COMPENASATION_H_2_6 + 2);
 
-  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_5 + 3);
+  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_6 + 3);
   BME280_hum_calib[3] = (tmp_word & 0xF0) | ((tmp_word & 0xFF) >> 4);
 
-  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_5 + 4);
+  tmp_word = BME280readWord(device_id, BME280_COMPENASATION_H_2_6 + 4);
   BME280_hum_calib[4] = ((tmp_word & 0x00FF) << 4) | ((tmp_word & 0xF000) >> 12);
-
+	BME280_hum_calib[5] = BME280readByte(device_id, BME280_COMPENASATION_H_2_6 + 6);
 }
 
 
@@ -59,7 +59,7 @@ uint8_t BME280whoAmI(uint8_t device_id)
 
 void BME280setMod(uint8_t device_id, uint8_t mod)
 {
-  uint8_t cotrl_reg_val = BME280BME280readByte(device_id, BME280_CTRL_MEAS);
+  uint8_t cotrl_reg_val = BME280readByte(device_id, BME280_CTRL_MEAS);
   cotrl_reg_val |= (mod & BME280_CTRL_MEAS_MODE_MASK);
   BME280writeByte(device_id, BME280_CTRL_MEAS, cotrl_reg_val);
 }
@@ -67,7 +67,7 @@ void BME280setMod(uint8_t device_id, uint8_t mod)
 uint32_t BME280readTemperatureData(uint8_t device_id)
 {
   // TODO: resolution is not counted here
-  uint32_t raw_temp = BME280readDW(device_id, BME280_TEMP_MSB);
+  uint32_t raw_temp = BME280readDWord(device_id, BME280_TEMP_MSB);
   raw_temp >>= (4 + 8);
   if(raw_temp & (1 << 19))
   {
@@ -79,14 +79,14 @@ uint32_t BME280readTemperatureData(uint8_t device_id)
 uint32_t BME280readPressureData(uint8_t device_id)
 {
   // TODO: resolution is not counted here
-  uint32_t raw_press = BME280readDW(device_id, BME280_PRESS_MSB);
+  uint32_t raw_press = BME280readDWord(device_id, BME280_PRESS_MSB);
   raw_press >>= (4 + 8);
-  return raw_temp;
+  return raw_press;
 }
 
 uint16_t BME280readHumidityData(uint8_t device_id)
 {
-  uint16_t raw_hum = BME280readW(device_id, BME280_HUM_MSB);
+  uint16_t raw_hum = BME280readWord(device_id, BME280_HUM_MSB);
   return raw_hum;
 }
 
@@ -116,11 +116,11 @@ float BME280readPressure(uint8_t device_id)
   int32_t var1 = 0;
   int32_t var2 = 0;
 
-  var1 = (((int32_t)t_fine) >> 1) - (int32_t)64000;
+  var1 = (((int32_t)BME280_t_fine) >> 1) - (int32_t)64000;
   var2 = (((var1 >> 2) * (var1 >> 2)) >> 11) * ((int32_t)BME280_press_calib[5]);
   var2 += ((var1 * ((int32_t)BME280_press_calib[4])) << 1);
   var2 = (var2 >> 2) + (((int32_t)BME280_press_calib[3]) << 16);
-  var1 = (((BME280_press[2] * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3) + \
+  var1 = (((BME280_press_calib[2] * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3) + \
          ((((int32_t)BME280_press_calib[1]) * var1) >> 1)) >> 18;
   var1 = ((((32768 + var1)) * ((int32_t)BME280_press_calib[0])) >> 15);
   if(!var1)
@@ -142,7 +142,7 @@ float BME280readPressure(uint8_t device_id)
          (real_int_press >> 3)) >> 13))) >> 12;
   var2 = (((int32_t)(real_int_press >> 2)) * ((int32_t)BME280_press_calib[7])) >> 13;
   real_int_press = (uint32_t)((int32_t)real_int_press + ((var1 + var2 + BME280_press_calib[6]) >> 4));
-  real_pressure = ((float)real_int_press) / 100.
+  real_pressure = ((float)real_int_press) / 100.;
   return real_pressure;
 }
 
@@ -171,10 +171,12 @@ uint8_t BME280readByte(uint8_t device_addr, uint8_t reg_addr)
 {
   // Insert your code here
 }
-uint16_t BME280readWorld(uint8_t device_addr, uint8_t reg_addr)
+
+uint16_t BME280readWord(uint8_t device_addr, uint8_t reg_addr)
 {
   // Insert your code here
 }
+
 uint32_t BME280readDWord(uint8_t device_addr, uint8_t reg_addr)
 {
   // Insert your code here
