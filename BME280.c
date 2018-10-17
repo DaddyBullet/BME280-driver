@@ -66,19 +66,13 @@ void BME280setMod(uint8_t device_id, uint8_t mod)
 
 uint32_t BME280readTemperatureData(uint8_t device_id)
 {
-  // TODO: resolution is not counted here
   uint32_t raw_temp = BME280readDWord(device_id, BME280_TEMP_MSB);
   raw_temp >>= (4 + 8);
-  if(raw_temp & (1 << 19))
-  {
-    raw_temp |= (0xFFF << 20);
-  }
   return raw_temp;
 }
 
 uint32_t BME280readPressureData(uint8_t device_id)
 {
-  // TODO: resolution is not counted here
   uint32_t raw_press = BME280readDWord(device_id, BME280_PRESS_MSB);
   raw_press >>= (4 + 8);
   return raw_press;
@@ -92,7 +86,7 @@ uint16_t BME280readHumidityData(uint8_t device_id)
 
 float BME280readTemperature(uint8_t device_id)
 {
-  float real_temp = 80;
+  float real_temp = 8000;
   int32_t raw_temp = (int32_t)BME280readTemperatureData(device_id);
   int32_t var1 = 0;
   int32_t var2 = 0;
